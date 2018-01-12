@@ -48,7 +48,7 @@ console.log(age);
 
 // First scoping example
 
-/*
+
 var a = 'Hello!';
 first();
 
@@ -61,42 +61,78 @@ function first() {
         console.log(a + b + c);
     }
 }
-*/
+
 
 
 
 // Example to show the differece between execution stack and scope chain
 
-/*
-var a = 'Hello!';
+
+var d = 'Hello!';
 first();
 
 function first() {
-    var b = 'Hi!';
+    var e = 'Hi!';
     second();
 
     function second() {
-        var c = 'Hey!';
-        third()
+        var f = 'Hey!';
+        third();
     }
 }
 
 function third() {
-    var d = 'John';
-    console.log(a + b + c + d);
+    var g = 'John';
+    // se produce el error porque la funcion third no puede acceder al scope donde f está definido
+    //console.log(f);
+    console.log(d + g);
 }
-*/
+
 
 
 
 ///////////////////////////////////////
 // Lecture: The this keyword
 
+// window object
+//console.log(this);
+calculateAge(1959);
+function calculateAge(year) {
+    new Date().getFullYear() - year;
+    // window object, porque la funcion calculateAge esta atachada a window object
+    console.log(this);
+}
 
+var john = {
+    name: 'John',
+    yearOfbirth: 1990,
+    calculateAge: function () {
+        console.log(this);
+        console.log(new Date().getFullYear() - this.yearOfbirth);
+        // window object porque una funcion regular (no un metodo definido dentro de un objeto) se atacha al window object
+        
+        /*
+        function inner() {
+            console.log(this);
+        }
+        inner();
+        */
+    }
+}
+john.calculateAge();
 
+var mike = {
+    name: 'Mike',
+    yearOfbirth: 1963
+}
 
+// method borrowing!!!! toma los metodos definidos en otro objeto como propios
+// 'this' only becomes something as soon as the method is called
+//mike.calculateAge = john.calculateAge;
+//mike.calculateAge();
 
-
+// otra forma: With call(), you can use a method belonging to another object.
+john.calculateAge.call(mike);
 
 
 
