@@ -1,4 +1,25 @@
-// Global app controller
-import num from './test';
-const x = 23;
-console.log(`I imported ${num} from another module called test.js! Variable x is ${x}`);
+import Search from './models/Search';
+import * as searchView from './views/searchView';
+// cuando no hay un default definido en el modulo, se necesitan las llaves
+import {elements, renderLoader, clearLoader} from './views/base';
+const state = {};
+
+const controlSearch = async() => {
+    const query = searchView.getInput(); 
+    if (query) {
+        state.search = new Search(query);
+        searchView.clearInput();
+        searchView.clearResults();
+        renderLoader(elements.searchRes);
+        await state.search.getResults();
+        clearLoader();
+        searchView.renderResults(state.search.resultadoPromesa);
+    }
+};
+
+elements.searchForm.addEventListener('submit', e => {
+    e.preventDefault();
+    controlSearch();
+});
+
+
