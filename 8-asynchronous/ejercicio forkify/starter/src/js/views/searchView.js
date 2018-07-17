@@ -9,15 +9,48 @@ export const clearInput = () => {
 
 export const clearResults = () => {
     elements.searchResultList.innerHTML = '';
+    elements.searchResPages.innerHTML = '';
 };
 
-export const renderResults = recipes => {
+export const renderResults = (recipes, page = 1, resultsPerPage = 10) => {
+    const start = (page - 1) * resultsPerPage;
+    const end = page * resultsPerPage;
     /* recipes.forEach(element => {
         renderRecipe(element);
     }); */
     // simplificado
-    recipes.forEach(renderRecipe);
+    recipes.slice(start, end).forEach(renderRecipe);
+    renderButtons(page, recipes.length, resultsPerPage);
 };
+
+const renderButtons = (page, numResults, resPerPage) => {
+    const pages = Math.ceil(numResults / resPerPage);
+    let button;
+    if (page === 1 && pages > 1) {
+        button = createButton(page, 'next');
+    } else {
+        if (page < pages) {
+            button = `
+                ${createButton(page, 'prev')}
+                ${createButton(page, 'next')}
+            `;
+        } else {
+            if (page === pages && pages > 1) {
+                button = createButton(page, 'prev');
+            }
+        }
+    }
+    elements.searchResPages.insertAdjacentHTML('afterbegin', button);
+};
+
+const createButton = (page, type) => `
+    <button class="btn-inline results__btn--${type}" data-goto="${type === 'prev' ? page -1 : page + 1}">
+        <span>Page ${type === 'prev' ? page -1 : page + 1}</span>    
+        <svg class="search__icon">
+            <use href="img/icons.svg#icon-triangle-${type === 'prev' ? 'left' : 'right'}"></use>
+        </svg>        
+    </button>
+`;
 
 const renderRecipe = recipe => {
     const markup = `
@@ -36,10 +69,10 @@ const renderRecipe = recipe => {
     elements.searchResultList.insertAdjacentHTML('beforeend', markup);
 };
 
-const limitRecipeTitle = (title, limit = 17) =>{
+const limitRecipeTitle = (title, limit = 17) => {
     const newTitle = [];
     if (title.length > limit) {
-        title.split(' ').reduce((acc, current) =>{
+        title.split(' ').reduce((acc, current) => {
             if (acc + current.length <= limit) {
                 newTitle.push(current);
             }
